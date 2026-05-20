@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 11, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/Rolen/Desktop/flysky.com/flysky%20-%20Website/src/app/booking/%5Bid%5D/page.tsx"],"sourcesContent":["import { redirect } from 'next/navigation'\r\n\r\nexport default async function LegacyBookingPage({\r\n  params,\r\n}: {\r\n  params: Promise<{ id: string }>\r\n}) {\r\n  const { id } = await params\r\n  redirect(`/dashboard/booking/${encodeURIComponent(id)}`)\r\n}\r\n"],"names":[],"mappings":";;;;AAAA;AAAA;;AAEe,eAAe,kBAAkB,EAC9C,MAAM,EAGP;IACC,MAAM,EAAE,EAAE,EAAE,GAAG,MAAM;IACrB,IAAA,iMAAQ,EAAC,CAAC,mBAAmB,EAAE,mBAAmB,KAAK;AACzD","debugId":null}}]
+}

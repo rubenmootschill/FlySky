@@ -1,0 +1,10 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/simbrief/submit/route.js")
+R.c("server/chunks/node_modules_next_7a39eb3c._.js")
+R.c("server/chunks/node_modules_next-auth_1810886e._.js")
+R.c("server/chunks/node_modules_openid-client_d15f72b3._.js")
+R.c("server/chunks/node_modules_5929141f._.js")
+R.c("server/chunks/node_modules_c697dc78._.js")
+R.c("server/chunks/[root-of-the-server]__91550ec2._.js")
+R.m("[project]/.next-internal/server/app/api/simbrief/submit/route/actions.js [app-rsc] (server actions loader, ecmascript)")
+R.m("[project]/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/src/app/api/simbrief/submit/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)")
+module.exports=R.m("[project]/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/src/app/api/simbrief/submit/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)").exports

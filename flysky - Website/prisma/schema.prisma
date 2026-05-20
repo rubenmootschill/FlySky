@@ -1,0 +1,674 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String          @id @default(cuid())
+  email                 String          @unique
+  name                  String
+  password              String
+  role                  Role            @default(PILOT)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  createdAirlineApiKeys AirlineApiKey[]
+  pilot                 Pilot?
+  sessions              Session[]
+  supportReports        SupportReport[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Pilot {
+  id             String                   @id @default(cuid())
+  userId         String                   @unique
+  callsign       String                   @unique
+  firstName      String
+  lastName       String
+  hub            String                   @default("EGLL")
+  totalHours     Float                    @default(0)
+  totalFlights   Int                      @default(0)
+  totalLandings  Int                      @default(0)
+  totalPoints    Int                      @default(0)
+  avgLandingRate Float?
+  status         PilotStatus              @default(ACTIVE)
+  rankId         String?
+  avatarUrl      String?
+  simBriefUser   String?
+  joinedAt       DateTime                 @default(now())
+  lastFlightAt   DateTime?
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  banReason      String?
+  bannedAt       DateTime?
+  airlineId      String?
+  acarsSessions  AcarsFlightSession[]
+  bookings       Booking[]
+  liveFlights    LiveFlight[]
+  airline        Airline?                 @relation(fields: [airlineId], references: [id])
+  rank           Rank?                    @relation(fields: [rankId], references: [id])
+  user           User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memberships    PilotAirlineMembership[]
+  badges         PilotBadge[]
+  pireps         Pirep[]
+}
+
+model Rank {
+  id         String   @id @default(cuid())
+  name       String
+  code       String   @unique
+  minHours   Float    @default(0)
+  minFlights Int      @default(0)
+  minPoints  Int      @default(0)
+  imageUrl   String?
+  color      String   @default("#0ea5e9")
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  pilots     Pilot[]
+}
+
+model Badge {
+  id          String       @id @default(cuid())
+  name        String
+  description String
+  imageUrl    String?
+  color       String       @default("#f59e0b")
+  category    String       @default("achievement")
+  createdAt   DateTime     @default(now())
+  pilots      PilotBadge[]
+}
+
+model PilotBadge {
+  id        String   @id @default(cuid())
+  pilotId   String
+  badgeId   String
+  awardedAt DateTime @default(now())
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  pilot     Pilot    @relation(fields: [pilotId], references: [id], onDelete: Cascade)
+
+  @@unique([pilotId, badgeId])
+}
+
+model Airline {
+  id                String                   @id @default(cuid())
+  name              String
+  callsignPrefix    String                   @unique
+  icaoCode          String?                  @unique
+  logoUrl           String?
+  website           String?
+  hub               String                   @default("EGLL")
+  description       String?
+  status            AirlineStatus            @default(ACTIVE)
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  ownerEmail        String?
+  bannerLogoUrl     String?
+  shortName         String?
+  homeIcao          String?
+  homePageContent   String?
+  homePageHtml      String?
+  subscription      AirlineSubscription?
+  payments          AirlinePaymentRecord[]
+  airports          AirlineAirport[]
+  apiKeys           AirlineApiKey[]
+  fleets            AirlineFleet[]
+  notams            AirlineNotam[]
+  posts             AirlinePost[]
+  discordDeliveries DiscordDeliveryLog[]
+  discordEndpoints  DiscordEndpoint[]
+  events            Event[]
+  pilots            Pilot[]
+  memberships       PilotAirlineMembership[]
+  routes            Route[]
+  supportReports    SupportReport[]
+}
+
+model AirlineApiKey {
+  id              String            @id @default(cuid())
+  airlineId       String
+  createdByUserId String?
+  name            String
+  keyPrefix       String
+  keyHash         String            @unique
+  scopes          AirlineApiScope[]
+  lastUsedAt      DateTime?
+  revokedAt       DateTime?
+  createdAt       DateTime          @default(now())
+  airline         Airline           @relation(fields: [airlineId], references: [id], onDelete: Cascade)
+  createdBy       User?             @relation(fields: [createdByUserId], references: [id])
+
+  @@index([airlineId, createdAt])
+  @@index([revokedAt])
+}
+
+model PilotAirlineMembership {
+  id        String   @id @default(cuid())
+  pilotId   String
+  airlineId String
+  joinedAt  DateTime @default(now())
+  airline   Airline  @relation(fields: [airlineId], references: [id], onDelete: Cascade)
+  pilot     Pilot    @relation(fields: [pilotId], references: [id], onDelete: Cascade)
+
+  @@unique([pilotId, airlineId])
+}
+
+model AirlineApplication {
+  id             String        @id @default(cuid())
+  airlineName    String
+  callsignPrefix String
+  icaoCode       String?
+  website        String?
+  description    String
+  contactName    String
+  contactEmail   String
+  hub            String
+  expectedPilots Int           @default(0)
+  status         AirlineStatus @default(PENDING)
+  reviewNotes    String?
+  submittedAt    DateTime      @default(now())
+  reviewedAt     DateTime?
+  logoUrl        String?
+  bannerLogoUrl  String?
+}
+
+model FleetAircraftType {
+  id            String         @id @default(cuid())
+  icaoCode      String         @unique
+  name          String
+  manufacturer  String
+  passengers    Int            @default(180)
+  imageUrl      String?
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  cargoVolume   Float          @default(0)
+  cargoWeight   Float          @default(0)
+  airlineFleets AirlineFleet[]
+}
+
+model AirlineFleet {
+  id                  String            @id @default(cuid())
+  airlineId           String
+  fleetAircraftTypeId String
+  count               Int               @default(1)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  airline             Airline           @relation(fields: [airlineId], references: [id], onDelete: Cascade)
+  fleetAircraftType   FleetAircraftType @relation(fields: [fleetAircraftTypeId], references: [id])
+
+  @@unique([airlineId, fleetAircraftTypeId])
+}
+
+model Aircraft {
+  id           String         @id @default(cuid())
+  registration String         @unique
+  type         String
+  icaoCode     String
+  hub          String
+  status       AircraftStatus @default(ACTIVE)
+  totalFlights Int            @default(0)
+  imageUrl     String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  bookings     Booking[]
+  liveFlights  LiveFlight[]
+  pireps       Pirep[]
+}
+
+model Route {
+  id           String    @id @default(cuid())
+  flightNumber String    @unique
+  depIcao      String
+  arrIcao      String
+  depIata      String?
+  arrIata      String?
+  depName      String
+  arrName      String
+  distance     Int
+  flightTime   Int
+  aircraftType String?
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  airlineId    String?
+  bookings     Booking[]
+  pireps       Pirep[]
+  airline      Airline?  @relation(fields: [airlineId], references: [id])
+}
+
+model Booking {
+  id               String    @id @default(cuid())
+  pilotId          String
+  routeId          String
+  aircraftId       String?
+  bookedAt         DateTime  @default(now())
+  expiresAt        DateTime?
+  used             Boolean   @default(false)
+  simBriefStaticId String?   @unique
+  dispatchData     Json?
+  aircraft         Aircraft? @relation(fields: [aircraftId], references: [id])
+  pilot            Pilot     @relation(fields: [pilotId], references: [id], onDelete: Cascade)
+  route            Route     @relation(fields: [routeId], references: [id])
+  pirep            Pirep?
+}
+
+model Pirep {
+  id             String      @id @default(cuid())
+  pilotId        String
+  routeId        String
+  aircraftId     String?
+  bookingId      String?     @unique
+  flightNumber   String
+  depIcao        String
+  arrIcao        String
+  depTime        DateTime
+  arrTime        DateTime
+  flightTime     Int
+  distance       Int
+  landingRate    Float?
+  fuelUsed       Float?
+  passengerCount Int         @default(0)
+  cargoWeight    Float       @default(0)
+  network        String?
+  callsign       String?
+  route          String?
+  remarks        String?
+  score          Int         @default(0)
+  scoreBreakdown Json?
+  acarsData      Json?
+  status         PirepStatus @default(PENDING)
+  submittedAt    DateTime    @default(now())
+  reviewedAt     DateTime?
+  reviewedBy     String?
+  aircraft       Aircraft?   @relation(fields: [aircraftId], references: [id])
+  booking        Booking?    @relation(fields: [bookingId], references: [id])
+  pilot          Pilot       @relation(fields: [pilotId], references: [id])
+  route_ref      Route       @relation(fields: [routeId], references: [id])
+}
+
+model LiveFlight {
+  id            String    @id @default(cuid())
+  pilotId       String
+  aircraftId    String?
+  callsign      String
+  depIcao       String
+  arrIcao       String
+  network       String?
+  lat           Float
+  lng           Float
+  altitude      Int       @default(0)
+  heading       Int       @default(0)
+  groundSpeed   Int       @default(0)
+  verticalSpeed Int       @default(0)
+  phase         String    @default("PREFLIGHT")
+  startedAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  aircraft      Aircraft? @relation(fields: [aircraftId], references: [id])
+  pilot         Pilot     @relation(fields: [pilotId], references: [id], onDelete: Cascade)
+
+  @@index([pilotId])
+}
+
+model AcarsFlightSession {
+  id                   String                @id @default(cuid())
+  pilotId              String
+  pilotCallsign        String
+  callsign             String
+  depIcao              String
+  arrIcao              String
+  aircraftType         String?
+  aircraftRegistration String?
+  network              String?
+  status               AcarsSessionStatus    @default(ACTIVE)
+  startedAt            DateTime              @default(now())
+  endedAt              DateTime?
+  lastSeenAt           DateTime              @default(now())
+  maxAltitude          Int                   @default(0)
+  maxGroundSpeed       Int                   @default(0)
+  pilot                Pilot                 @relation(fields: [pilotId], references: [id], onDelete: Cascade)
+  telemetryPoints      AcarsTelemetryPoint[]
+
+  @@index([pilotId, status])
+  @@index([startedAt])
+}
+
+model AcarsTelemetryPoint {
+  id             String             @id @default(cuid())
+  sessionId      String
+  recordedAt     DateTime           @default(now())
+  lat            Float
+  lng            Float
+  altitude       Int                @default(0)
+  heading        Int                @default(0)
+  groundSpeed    Int                @default(0)
+  verticalSpeed  Int                @default(0)
+  pitch          Float?             @default(0)
+  bank           Float?             @default(0)
+  onGround       Boolean            @default(true)
+  gearDown       Boolean            @default(true)
+  flapsPct       Float?             @default(0)
+  fuelTotalKg    Float?
+  fuelFlowKgPerH Float?
+  grossWeightKg  Float?
+  outsideTempC   Float?
+  windSpeedKts   Int?
+  windDirection  Int?
+  phase          String             @default("PREFLIGHT")
+  session        AcarsFlightSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, recordedAt])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  imageUrl    String?
+  startDate   DateTime
+  endDate     DateTime
+  depIcao     String?
+  arrIcao     String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  airlineId   String?
+  airline     Airline? @relation(fields: [airlineId], references: [id])
+
+  @@index([airlineId, startDate])
+}
+
+model AirlineNotam {
+  id        String   @id @default(cuid())
+  airlineId String
+  title     String
+  body      String
+  severity  String   @default("INFO")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  airline   Airline  @relation(fields: [airlineId], references: [id], onDelete: Cascade)
+
+  @@index([airlineId, createdAt])
+  @@index([active])
+}
+
+model CommunityGoal {
+  id             String   @id @default(cuid())
+  title          String
+  description    String
+  targetFlights  Int
+  currentFlights Int      @default(0)
+  targetHours    Float
+  currentHours   Float    @default(0)
+  startDate      DateTime
+  endDate        DateTime
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model DiscordEndpoint {
+  id            String                @id @default(cuid())
+  scope         DiscordEndpointScope
+  airlineId     String?
+  name          String
+  webhookUrl    String
+  signingSecret String?
+  enabled       Boolean               @default(true)
+  lastError     String?
+  lastSuccessAt DateTime?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  deliveries    DiscordDeliveryLog[]
+  airline       Airline?              @relation(fields: [airlineId], references: [id], onDelete: Cascade)
+  subscriptions DiscordSubscription[]
+
+  @@index([scope])
+  @@index([airlineId])
+}
+
+model DiscordSubscription {
+  id         String               @id @default(cuid())
+  endpointId String
+  eventType  DiscordEventType
+  enabled    Boolean              @default(true)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+  deliveries DiscordDeliveryLog[]
+  endpoint   DiscordEndpoint      @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@unique([endpointId, eventType])
+}
+
+model DiscordDeliveryLog {
+  id             String               @id @default(cuid())
+  endpointId     String
+  subscriptionId String?
+  eventType      DiscordEventType
+  scope          DiscordEndpointScope
+  airlineId      String?
+  status         String               @default("PENDING")
+  httpStatus     Int?
+  attempt        Int                  @default(1)
+  error          String?
+  payload        Json?
+  createdAt      DateTime             @default(now())
+  deliveredAt    DateTime?
+  airline        Airline?             @relation(fields: [airlineId], references: [id])
+  endpoint       DiscordEndpoint      @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  subscription   DiscordSubscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@index([endpointId, createdAt])
+  @@index([eventType, createdAt])
+  @@index([status])
+}
+
+model SupportReport {
+  id        String              @id @default(cuid())
+  userId    String?
+  airlineId String?
+  subject   String
+  message   String
+  category  String              @default("GENERAL")
+  email     String?
+  status    SupportReportStatus @default(OPEN)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  airline   Airline?            @relation(fields: [airlineId], references: [id])
+  user      User?               @relation(fields: [userId], references: [id])
+
+  @@index([status, createdAt])
+  @@index([airlineId])
+  @@index([userId])
+}
+
+model AirlineSubscription {
+  id                 String                    @id @default(cuid())
+  airlineId          String                    @unique
+  plan               String                    @default("monthly")
+  status             AirlineSubscriptionStatus @default(TRIALING)
+  trialStartAt       DateTime                  @default(now())
+  trialEndsAt        DateTime
+  currentPeriodStart DateTime                  @default(now())
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean                   @default(false)
+  canceledAt         DateTime?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+  airline            Airline                   @relation(fields: [airlineId], references: [id], onDelete: Cascade)
+  payments           AirlinePaymentRecord[]    @relation("SubscriptionPayments")
+}
+
+model AirlinePaymentRecord {
+  id                String        @id @default(cuid())
+  airlineId         String
+  amount            Int
+  currency          String        @default("EUR")
+  status            PaymentStatus @default(PAID)
+  description       String?
+  externalPaymentId String?
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  airline           Airline       @relation(fields: [airlineId], references: [id], onDelete: Cascade)
+  subscriptionId    String?
+  subscription      AirlineSubscription? @relation("SubscriptionPayments", fields: [subscriptionId], references: [id])
+}
+
+enum AirlineSubscriptionStatus {
+  TRIALING
+  ACTIVE
+  CANCELED
+  PAST_DUE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model Airport {
+  id              String           @id @default(cuid())
+  icao            String           @unique
+  iata            String?
+  name            String
+  city            String
+  country         String
+  lat             Float
+  lng             Float
+  active          Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  airlineAirports AirlineAirport[]
+}
+
+model AirlineAirport {
+  id        String   @id @default(cuid())
+  airlineId String
+  airportId String
+  tickets   Int      @default(70)
+  isHome    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  airline   Airline  @relation(fields: [airlineId], references: [id], onDelete: Cascade)
+  airport   Airport  @relation(fields: [airportId], references: [id], onDelete: Cascade)
+
+  @@unique([airlineId, airportId])
+}
+
+model AirlinePost {
+  id          String   @id @default(cuid())
+  airlineId   String
+  title       String
+  description String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  airline     Airline  @relation(fields: [airlineId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([airlineId, createdAt])
+}
+
+enum Role {
+  PILOT
+  MODERATOR
+  ADMIN
+  AIRLINE_OWNER
+}
+
+enum PilotStatus {
+  ACTIVE
+  ON_LEAVE
+  SUSPENDED
+  RETIRED
+}
+
+enum FlightStatus {
+  SCHEDULED
+  BOARDING
+  IN_FLIGHT
+  LANDED
+  COMPLETED
+  CANCELLED
+}
+
+enum PirepStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum AirlineStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+}
+
+enum AircraftStatus {
+  ACTIVE
+  MAINTENANCE
+  RETIRED
+}
+
+enum AcarsSessionStatus {
+  ACTIVE
+  ENDED
+  ABORTED
+}
+
+enum DiscordEndpointScope {
+  OWNER
+  AIRLINE
+}
+
+enum DiscordEventType {
+  PILOT_SIGNUP
+  AIRLINE_APPLICATION_SUBMITTED
+  PIREP_ACCEPTED
+  SUPPORT_REPORT_SUBMITTED
+  EVENT_PUBLISHED
+  NOTAM_PUBLISHED
+  FLIGHT_PLAN_FILED
+  RADAR_STARTED
+  RADAR_ENDED
+}
+
+enum SupportReportStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum AirlineApiScope {
+  AIRPORTS
+  AWARDS
+  EXPENSES
+  FLEET
+  FLIGHTS
+  MAP
+  OPERATIONS
+  PILOTS
+  SCHEDULES
+}

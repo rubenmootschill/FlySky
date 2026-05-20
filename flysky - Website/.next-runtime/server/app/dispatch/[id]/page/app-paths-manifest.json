@@ -1,0 +1,3 @@
+{
+  "/dispatch/[id]/page": "app/dispatch/[id]/page.js"
+}

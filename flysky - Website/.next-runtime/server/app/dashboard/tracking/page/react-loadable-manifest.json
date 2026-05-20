@@ -1,0 +1,10 @@
+{
+  "[project]/src/components/tracking/live-map.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/src/components/tracking/live-map.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/node_modules_mapbox-gl_dist_mapbox-gl_b0bb8555.js",
+      "static/chunks/src_components_tracking_live-map_tsx_1b619023._.js",
+      "static/chunks/src_components_tracking_live-map_tsx_942a2e8f._.js"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "version": 3,
+  "middleware": {
+    "/": {
+      "files": [
+        "server/edge/chunks/_1084151e._.js",
+        "server/edge/chunks/[root-of-the-server]__e8895b3c._.js",
+        "server/edge/chunks/turbopack-edge-wrapper_866a882a.js"
+      ],
+      "name": "middleware",
+      "page": "/",
+      "matchers": [
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/airline(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
+          "originalSource": "/airline/:path*"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "development",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "vLmhfdGNgwL4GRY8eh0X3lTYeRLVI0ha1wOp3yFUsek=",
+        "__NEXT_PREVIEW_MODE_ID": "8c9ac64eb4d17d525f19a1ee5b92c36d",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "4f658afa9d67f5ce76069bdd34d1038127564128dd9d46b056d8a781d30cfc1e",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "aa97a8b2f26fd41a751965676993e3f4c6b9256d43de54e609d74aa5ed0897e7"
+      }
+    }
+  },
+  "sortedMiddleware": [
+    "/"
+  ],
+  "functions": {}
+}

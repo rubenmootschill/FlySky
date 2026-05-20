@@ -1,0 +1,14 @@
+{
+  "name": "flysky-discord-bot",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "node --watch bot.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "@prisma/client": "^5.22.0",
+    "dotenv": "^16.4.7"
+  }
+}

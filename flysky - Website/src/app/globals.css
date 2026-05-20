@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+  }
+
+  .dark {
+    --background: 2 6 23;
+    --foreground: 248 250 252;
+  }
+
+  * {
+    @apply border-slate-200 dark:border-slate-700;
+  }
+
+  body {
+    @apply bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-600 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-500;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/10;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-400 text-white font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-lg border border-slate-200 dark:border-slate-700 transition-colors duration-200;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-medium rounded-lg transition-colors duration-200;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1.5;
+  }
+
+  .badge-status {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .stat-card {
+    @apply card flex flex-col gap-1;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 text-sm font-medium;
+  }
+
+  .nav-link-active {
+    @apply nav-link bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20;
+  }
+
+  .table-row-hover {
+    @apply hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-150;
+  }
+
+  .section-title {
+    @apply text-2xl font-bold text-slate-900 dark:text-white;
+  }
+
+  .section-subtitle {
+    @apply text-slate-500 dark:text-slate-400 text-sm;
+  }
+}
+
+/* Leaflet dark map overrides */
+.leaflet-container {
+  @apply bg-slate-900 rounded-xl overflow-hidden;
+}
+
+.leaflet-tile-pane {
+  filter: brightness(0.8) saturate(0.6) hue-rotate(200deg);
+}
+
+/* Custom flight path animation */
+@keyframes dash {
+  to { stroke-dashoffset: 0; }
+}
+
+.flight-path-animated {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 3s linear forwards;
+}
+
+/* Glowing accent for live flights */
+.live-pulse {
+  box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+  animation: live-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes live-ping {
+  75%, 100% {
+    box-shadow: 0 0 0 8px rgba(14, 165, 233, 0);
+  }
+}

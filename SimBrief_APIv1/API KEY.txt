@@ -1,0 +1,18 @@
+Your unique API key: bAZOBFXRHGKtxc2m5l9bAFDCBii2Ox7Q
+
+Due to time constraints I won't be able to give detailed step-by-step
+guidance for using the API, however the included Readme.txt should cover
+most of the basics. There is also some additional guidance in the forums
+here: https://forum.navigraph.com/t/the-simbrief-api/5298
+
+You'll notice that in the sample files, the API key is only stored in
+the backend and then hashed via an AJAX call to a server-side PHP script
+(this way the actual API key is not leaked to the user). The API sample
+files use a PHP script for this, but you are free to translate the API
+key hashing from PHP into a different backend language as needed. It is
+not recommended to store or expose the API key client side, as if it is
+ever stolen or misused we might need to disable it.
+
+Depending on how your app will be structured, you might also be
+interested in incorporating the following optional SimBrief features
+(the API key is not required to use these):

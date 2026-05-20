@@ -1,0 +1,6 @@
+[
+  {
+    "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/airline(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
+    "originalSource": "/airline/:path*"
+  }
+]

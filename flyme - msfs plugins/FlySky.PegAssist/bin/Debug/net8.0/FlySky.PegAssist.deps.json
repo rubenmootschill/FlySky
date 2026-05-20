@@ -1,0 +1,48 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "FlySky.PegAssist/1.0.0": {
+        "dependencies": {
+          "SimConnect.NET": "0.1.18"
+        },
+        "runtime": {
+          "FlySky.PegAssist.dll": {}
+        }
+      },
+      "SimConnect.NET/0.1.18": {
+        "runtime": {
+          "lib/net8.0/SimConnect.NET.dll": {
+            "assemblyVersion": "0.1.18.0",
+            "fileVersion": "0.1.18.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win-x64/native/SimConnect.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FlySky.PegAssist/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SimConnect.NET/0.1.18": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-sdRO516yqQ/yVwrCE4cPyULnQMGSpsoSDExT5XYZLYYY28Za0F2u4Em4i/NdTQN/lfYy8hDaxy7XY25QDANlDQ==",
+      "path": "simconnect.net/0.1.18",
+      "hashPath": "simconnect.net.0.1.18.nupkg.sha512"
+    }
+  }
+}
